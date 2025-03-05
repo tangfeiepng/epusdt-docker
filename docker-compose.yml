@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  epusdt:
+    image: epusdt-dev:latest
+    container_name: epusdt1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./.env:/app/.env
+      - ./sql:/app/sql
+      - ./logs:/logs
+      - ./runtime:/runtime
+      - ./static:/static
+    depends_on:
+      - mysql
+      - redis
+    restart: unless-stopped
+    environment:
+      - mysql_host=mysql
+      - mysql_port=3306
+      - mysql_user=root
+      - mysql_passwd=root
+      - mysql_database=epusdt
+      - redis_host=redis
+      - redis_port=6379
+      - redis_passwd=
+      - redis_db=5
+
+  mysql:
+    image: mysql:8
+    command: --mysql-native-password=ON --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --binlog-expire-logs-seconds=25920
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql/:/var/lib/mysql/
+      - ./docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
+    environment:
+      TZ: Asia/Shanghai # 指定时区
+      MYSQL_ROOT_PASSWORD: "root" # 配置root用户密码
+      MYSQL_DATABASE: "epusdt" # 业务库名
+
+  redis:
+    image: redis
+    # command: --requirepass "12345678" # redis库密码,不需要密码注释本行
+    restart: always
+    environment:
+      TZ: Asia/Shanghai # 指定时区
+    volumes:
+      - ./data/redis/:/data/
+    command: redis-server --appendonly yes
+
+networks:
+  epusdt_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:

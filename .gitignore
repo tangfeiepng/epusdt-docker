@@ -1,0 +1,11 @@
+# 数据目录
+/data/mysql/
+/data/redis/
+
+# 日志和运行时文件
+/logs/
+/runtime/
+
+# 其他系统文件
+.DS_Store
+Thumbs.db
