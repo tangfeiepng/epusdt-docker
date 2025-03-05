@@ -2,13 +2,12 @@ version: '3'
 
 services:
   epusdt:
-    image: epusdt-dev:latest
+    image: tangpengfei/epusdt:latest
     container_name: epusdt1
     ports:
       - "8000:8000"
     volumes:
       - ./.env:/app/.env
-      - ./sql:/app/sql
       - ./logs:/logs
       - ./runtime:/runtime
       - ./static:/static
